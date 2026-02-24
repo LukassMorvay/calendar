@@ -1,0 +1,962 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.85)),
+        url('chat1.png') no-repeat center center fixed;
+    background-size: cover;
+    background-color: rgba(247, 247, 247, 0.9);
+}
+
+header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+header h1 {
+    margin-top: 30px;
+    font-size: 2em;
+    color: #313b46bf;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Calendar controls */
+#calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+#calendar-controls button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    user-select: none;
+}
+
+#monthYear {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Calendar grid views */
+#calendar {
+    display: grid;
+    gap: 10px;
+}
+
+.month-view,
+.week-view {
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.day-view {
+    display: flex;
+    justify-content: center;
+}
+
+.day-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Generic day card */
+.day {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.day:hover {
+    background-color: #e6f0ff;
+}
+
+/* View-specific day sizing */
+.day-view .day {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 600px;
+}
+
+.week-view .day {
+    flex: 1;
+    min-width: 120px;
+    max-width: 300px;
+    min-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.month-view .day {
+    min-height: 140px;
+}
+
+/* Date/title inside day */
+.day .date {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.day .date-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+    padding: 5px;
+    text-align: center;
+}
+
+/* Task / vacation / note badges & containers */
+.vacation-container,
+.note-container {
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.common-badge {
+    font-size: 0.9em;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color .3s;
+}
+
+.common-badge:hover {
+    filter: brightness(0.98);
+}
+
+/* Specific badges (vacation / note / prenocovanie) */
+.vacation-badge {
+    background-color: #b3e01c;
+    color: #000;
+}
+
+.vacation-badge:hover {
+    background-color: #a0cc17;
+}
+
+.note-badge {
+    background-color: #f0e68c;
+    color: #000;
+}
+
+.note-badge:hover {
+    background-color: #e0d670;
+}
+
+/* Small/compact variants for week/month view */
+.week-view .vacation-badge,
+.month-view .vacation-badge,
+.week-view .note-badge,
+.month-view .note-badge {
+    font-size: 0.75em;
+    padding: 4px 12px;
+    margin-bottom: 4px;
+    border-radius: 18px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    gap: 4px;
+    line-height: 1;
+    max-width: 100%;
+}
+
+/* Buttons inside badges */
+.vacation-badge .edit-vacation-btn,
+.note-badge .edit-note-btn,
+.week-view .vacation-badge .edit-vacation-btn,
+.week-view .note-badge .edit-note-btn,
+.month-view .vacation-badge .edit-vacation-btn,
+.month-view .note-badge .edit-note-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    padding: 2px;
+    color: #333;
+    margin-left: auto;
+    transition: color .3s;
+}
+
+.vacation-badge .edit-vacation-btn:hover,
+.note-badge .edit-note-btn:hover {
+    color: #007bff;
+}
+
+/* Task list and badges */
+.task-badge {
+    font-size: 0.8em;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+    border-radius: 15px;
+    color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Week-specific task badge adjustments (allow wrapping/icons) */
+.week-view .task-badge {
+    font-size: 0.65em;
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    gap: 4px;
+    align-items: center;
+}
+
+.week-view .task-badge .checklist-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-left: 2px;
+}
+
+/* Task object used in list (keeps visual identity for in-modal list) */
+.task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.task .task-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-weight: 700;
+    margin-left: 6px;
+    color: rgb(0, 0, 0);
+    transition: background-color .3s;
+}
+
+.task .edit-btn {
+    background-color: #ffc107;
+    color: black;
+}
+
+.task .edit-btn:hover {
+    background-color: #e0aa06;
+}
+
+.task .delete-btn {
+    background-color: #c62828;
+}
+
+.task .delete-btn:hover {
+    background-color: #9b1b1b;
+}
+
+/* Task category colors (keeps all categories) */
+.task-badge.Oprava_skla,
+.task.Oprava_skla {
+    background: #ff69b4;
+    color: #fff;
+}
+
+.task-badge.Vymena_skla,
+.task.Vymena_skla {
+    background: #4caf50;
+    color: #fff;
+}
+
+.task-badge.Prelepenie_skla,
+.task.Prelepenie_skla {
+    background: #b5651d;
+    color: #fff;
+}
+
+/* Tazne_zariadenie color was swapped with Prenocovanie in original - preserve that */
+.task-badge.Tazne_zariadenie,
+.task.Tazne_zariadenie {
+    background: #9e9e9e;
+    color: #fff;
+}
+
+/* now grey */
+.task-badge.Ziarovky,
+.task.Ziarovky {
+    background: #fff176;
+    color: #000;
+}
+
+.task-badge.Ostatne,
+.task.Ostatne {
+    background: #f0e68c;
+    color: #000;
+}
+
+.task-badge.Klimatizacia,
+.task.Klimatizacia {
+    background: #2196f3;
+    color: #fff;
+}
+
+/* Counter circles (mirrors task colors) */
+.task-counter {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.counter-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.counter-circle.Oprava_skla {
+    background: #ff69b4;
+}
+
+.counter-circle.Vymena_skla {
+    background: #4caf50;
+}
+
+.counter-circle.Prelepenie_skla {
+    background: #b5651d;
+}
+
+.counter-circle.Tazne_zariadenie {
+    background: #9e9e9e;
+}
+
+.counter-circle.Ziarovky {
+    background: #fff176;
+    color: #000;
+}
+
+.counter-circle.Ostatne {
+    background: #e0d670;
+}
+
+.counter-circle.Klimatizacia {
+    background: #2196f3;
+}
+
+/* Smaller counters for week view */
+.week-view .counter-circle {
+    width: 18px;
+    height: 18px;
+    font-size: 0.7em;
+}
+
+/* Show more button */
+.show-more-btn {
+    font-size: 0.7em;
+    padding: 4px 8px;
+    margin-top: 4px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.show-more-btn:hover {
+    background: #0056b3;
+}
+
+/* Modal (overlay + content) */
+.modal.hidden {
+    display: none;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 25px 35px;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* Modal internals: task list, details, checklist */
+#taskList {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 25px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: .9em;
+}
+
+#detailsContent {
+    font-size: 1em;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    line-height: 1.8;
+}
+
+#detailsContent p {
+    margin: 10px 0;
+}
+
+#detailsContent strong {
+    color: #333;
+    font-weight: 600;
+}
+
+#detailsChecklist {
+    margin-top: 25px;
+}
+
+#detailsChecklist h3 {
+    margin-bottom: 12px;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #333;
+}
+
+#detailsChecklist label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#detailsChecklist input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    margin-top: 12px;
+    vertical-align: middle;
+}
+
+/* Forms */
+form label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+}
+
+form .required {
+    color: red;
+    margin-left: 5px;
+}
+
+form input[type="text"],
+form select,
+form input[type="date"],
+form input[type="number"],
+form input[type="tel"] {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+form input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    margin-top: 10px;
+    vertical-align: middle;
+}
+
+/* Checklist styles */
+.checklist-section {
+    margin-top: 20px;
+}
+
+.checklist-section h3 {
+    margin-bottom: 10px;
+}
+
+.checklist-section label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.checklist-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    padding: 2px;
+    margin-left: 4px;
+}
+
+.task-badge .checklist-icon svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+/* Buttons used inside modals & checklist (consolidated) */
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-top: 25px;
+    text-align: right;
+}
+
+.modal-buttons button {
+    flex-shrink: 0;
+    padding: 10px 22px;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background-color .3s ease, transform .2s ease;
+}
+
+.modal-buttons button[type="submit"] {
+    background: #007bff;
+    color: #fff;
+}
+
+.modal-buttons button#editDetails {
+    background: #ffc107;
+    color: black;
+}
+
+.modal-buttons button#closeDetails,
+.modal-buttons button[type="button"],
+.modal-buttons button#cancelVacationModal,
+.modal-buttons button#cancelExportModal,
+.modal-buttons button#cancelModal {
+    background: #aaa;
+    color: #fff;
+}
+
+.modal-buttons button#closeDetails {
+    padding: 18px 30px;
+    font-size: 16px;
+}
+
+.modal-buttons button#closeDetails:hover {
+    background: #999;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Print / save buttons */
+#printLabel {
+    border: none;
+    padding: 10px 22px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+}
+
+#printLabel:hover {
+    background: #0056b3;
+    /* if you want hover color, uncomment and change */
+}
+
+/* Specific action buttons */
+#saveChecklist {
+    background: #007bff;
+    color: #fff;
+}
+
+#saveChecklist:hover {
+    background: #0069d9;
+}
+
+#deleteVacationBtn,
+#deleteNoteBtn {
+    background: #c62828;
+    color: #fff;
+}
+
+#deleteVacationBtn:hover,
+#deleteNoteBtn:hover {
+    background: #9b1b1b;
+}
+
+/* View controls and day picker */
+#viewControls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#viewControls button {
+    background: #eee;
+    border: none;
+    padding: 8px 16px;
+    margin: 0 4px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#viewControls button.active {
+    background: #007bff;
+    color: #fff;
+}
+
+#dayPicker {
+    display: flex;
+    justify-content: center;
+    margin: 25px auto 30px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#dayPicker button {
+    background: #eee;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #333;
+    transition: background-color .3s, transform .2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    min-width: 80px;
+}
+
+#dayPicker button.nav-btn {
+    background: #007bff;
+    color: #fff;
+    padding: 12px 15px;
+    min-width: 40px;
+}
+
+#dayPicker button:hover {
+    background: #ddd;
+    transform: scale(1.05);
+}
+
+#dayPicker button.active {
+    background: #007bff;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Add vacation */
+.add-vacation-button {
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.add-vacation-button button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.add-vacation-button button:hover {
+    background: #0056b3;
+}
+
+/* Footer text */
+.footer-text {
+    text-align: center;
+    margin-top: 10px;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.2em;
+    color: #a57c00;
+}
+
+/* Day types (weekend / public holiday) */
+.day.weekend {
+    background-color: #d1e6f8;
+}
+
+.day.public-holiday {
+    background-color: #fbc7c2;
+}
+
+.day.weekend:hover {
+    background-color: #e0f0ff;
+}
+
+.day.public-holiday:hover {
+    background-color: #ffd1d1;
+}
+
+/* Today button */
+#todayBtn {
+    background: #19a73a;
+    color: #000;
+}
+
+#todayBtn:hover {
+    background: #21b44175;
+}
+
+/* Delete task button (keeps original behaviour) */
+#deleteTaskBtn {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    left: 15px;
+    z-index: 10;
+}
+
+#deleteTaskBtn:hover {
+    background-color: #f5c6cb;
+}
+
+/* Prenocovanie special badge and counter (color swapped originally) */
+.prenocovanie-badge {
+    background-color: #ff9800 !important;
+    color: black !important;
+    margin-left: 40px;
+}
+
+.counter-circle.Prenocovanie {
+    background-color: #ff9800 !important;
+    color: black !important;
+}
+
+/* Modal date display and form extras */
+#modalDateDisplay {
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+/* Visual indicator for printable characters in extraInfo field */
+#extraInfo {
+    background: linear-gradient(to right,
+            #e8f5e9 0%,
+            #e8f5e9 calc(30ch - 10px),
+            #fff3e0 calc(30ch - 10px),
+            #fff3e0 100%);
+    transition: background .3s;
+    padding-left: 10px;
+}
+
+#extraInfo:focus {
+    background: linear-gradient(to right,
+            #c8e6c9 0%,
+            #c8e6c9 calc(30ch - 10px),
+            #ffe0b2 calc(30ch - 10px),
+            #ffe0b2 100%);
+}
+
+/* Hourly/day view blocks */
+.hour-block {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    padding: 4px 0;
+    align-items: flex-start;
+}
+
+.hour-label {
+    width: 60px;
+    text-align: right;
+    padding-right: 40px;
+    font-size: 16px;
+    color: #555;
+    font-weight: bold;
+}
+
+.hour-slot {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Responsive adjustments (consolidated) */
+@media (max-width:1200px) {
+    .week-view .day {
+        min-width: 100px;
+        max-width: 250px;
+    }
+
+    .day-view .task-badge,
+    .day-view .vacation-badge {
+        font-size: .9em;
+        padding: 8px 12px;
+    }
+
+    .week-view .task-badge,
+    .week-view .vacation-badge {
+        font-size: .65em;
+        padding: 3px 5px;
+    }
+
+    .hour-label {
+        width: 50px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width:768px) {
+
+    .vacation-badge,
+    .note-badge {
+        font-size: .8em;
+        padding: 6px 10px;
+        gap: 6px;
+    }
+
+    .week-view {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .week-view .day {
+        min-width: 100px;
+        max-width: 200px;
+        min-height: 250px;
+    }
+
+    .day-view .day {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .day-view .task-badge,
+    .day-view .vacation-badge {
+        font-size: .8em;
+        padding: 6px 10px;
+    }
+
+    .week-view .task-badge,
+    .week-view .vacation-badge {
+        font-size: .6em;
+        padding: 3px 5px;
+    }
+
+    .hour-label {
+        width: 40px;
+        font-size: 12px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .add-vacation-button {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .footer-text {
+        font-size: 1em;
+    }
+
+    .checklist-buttons {
+        text-align: center;
+    }
+
+    .show-more-btn {
+        font-size: .6em;
+        padding: 3px 6px;
+    }
+
+    #dayPicker button {
+        min-width: 60px;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    #dayPicker button.nav-btn {
+        padding: 10px 12px;
+        min-width: 30px;
+    }
+
+    .task-counter {
+        gap: 8px;
+    }
+
+    .counter-circle {
+        width: 20px;
+        height: 20px;
+        font-size: .8em;
+    }
+}
+
+/* Ensure pointer behavior for checklist labels in details (kept original) */
+.checklist-section label {
+    pointer-events: none;
+    cursor: default;
+}
+
+.checklist-section label>input[type="checkbox"] {
+    pointer-events: auto;
+    cursor: pointer;
+}
